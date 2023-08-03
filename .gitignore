@@ -25,3 +25,6 @@ nativedroid/venv/*
 MANIFEST
 
 bazel-*
+.bloop/
+
+.amandroid_stash/

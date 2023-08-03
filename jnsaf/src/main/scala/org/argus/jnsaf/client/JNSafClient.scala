@@ -91,8 +91,8 @@ class JNSafClient(address: String, port: Int, reporter: Reporter) {
     }
     requestObserver.onCompleted()
     // Receiving happens asynchronously
-    if (!doneSignal.await(1, TimeUnit.MINUTES)) {
-      reporter.error(TITLE, "loadBinary can not finish within 1 minutes")
+    if (!doneSignal.await(9999, TimeUnit.MINUTES)) { // nativesummary: timeout1
+      reporter.error(TITLE, "loadBinary can not finish within 9999 minutes")
     }
     loadedAPKs.get(fileUri)
   }
@@ -126,8 +126,8 @@ class JNSafClient(address: String, port: Int, reporter: Reporter) {
         responseOpt = Some(response)
         doneSignal.countDown()
       }
-      if (!doneSignal.await(5, TimeUnit.MINUTES)) {
-        reporter.error(TITLE, "genSummary can not finish within 5 minutes")
+      if (!doneSignal.await(20, TimeUnit.MINUTES)) {  // nativesummary: timeout2
+        reporter.error(TITLE, "genSummary can not finish within 20 minutes")
       }
       responseOpt match {
         case Some(response) =>

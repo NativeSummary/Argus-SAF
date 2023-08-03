@@ -1,3 +1,40 @@
+# Docker image for JN-SAF
+
+Notice: there are some modifications based on the author's code, especially timeout values.
+
+## Docker usage
+
+1. mount folder containing apk into container, eg: `/root/apps`
+2. specify full path of the apk within container as the argument, eg: `/root/apps/app.apk`
+
+example:
+```
+docker run --rm -v /path/to/NativeFlowBench:/root/apps/ nativesummary/jnsaf /root/apps/native_leak.apk
+```
+
+result files:
+1. `APK_NAME.pystdout.log` `APK_NAME.pystderr.log` from nativedroid
+1. `APK_NAME.jnstdout.log` `APK_NAME.jnstderr.log` from jnsaf server(java -jar Argus-saf.jar jnsaf ...)
+
+other files:
+1. intermediate files from nativedroid server `/tmp/binaries/`.
+1. intermediate files from jnsaf server: `/tmp/jn-saf/`.
+
+### timeouts
+
+1. `jnsaf\src\main\scala\org\argus\jnsaf\client\JNSafClient.scala:94` "loadBinary can not finish within 1 minutes" 90% apks will timeout here
+1. `jnsaf\src\main\scala\org\argus\jnsaf\client\JNSafClient.scala:129` "genSummary can not finish within 5 minutes"
+1. `.amandroid_stash/amandroid/config.ini` `[analysis] timeout = 2` timeout in minutes for each component **IMPORTANT**
+
+### change taint sources and sinks
+
+add `-v /path/to/ss_jnsaf_taintbench.txt:/root/.amandroid_stash/amandroid/taintAnalysis/sourceAndSinks/TaintSourcesAndSinks.txt` to docker run command.
+
+### build docker image
+
+1. use `build.sh` to generate `.amandroid_stash` folder
+1. `docker build . --tag jnsaf`
+
 # Argus-SAF: Argus static analysis framework
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://travis-ci.org/arguslab/Argus-SAF.svg?branch=master)](https://travis-ci.org/arguslab/Argus-SAF)
