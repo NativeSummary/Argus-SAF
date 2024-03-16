@@ -20,5 +20,5 @@ if [ ! -e "$SCRIPTPATH/.amandroid_stash/amandroid.checksum" ]; then
   mv "$SCRIPTPATH/amandroid.checksum" "$SCRIPTPATH/.amandroid_stash/amandroid.checksum"
 fi
 
-docker image rm jnsaf && \
+docker image rm jnsaf || true
 docker build . --tag jnsaf

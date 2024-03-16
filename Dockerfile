@@ -2,25 +2,21 @@ ARG UBUNTU_MIRROR=mirrors.tuna.tsinghua.edu.cn
 
 FROM ubuntu:18.04
 ARG UBUNTU_MIRROR
-# clean files in .gitignore before building image
 
-# develop: docker run -it --name test_jucify -v C:\JuCify\:/root/Jucify ubuntu:22.04
-# headless jdk saves 300mb space
-# "build-essential python3.7-dev graphviz libgraphviz-dev" is required for pygraphviz
 SHELL ["/bin/bash", "-c"]
 
 RUN sed -i "s/archive.ubuntu.com/${UBUNTU_MIRROR}/g" /etc/apt/sources.list \
  && sed -i "s/security.ubuntu.com/${UBUNTU_MIRROR}/g" /etc/apt/sources.list \
- && apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends curl git wget sudo unzip software-properties-common nano openjdk-17-jdk-headless python2.7 protobuf-compiler \
+ && apt update && DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends curl time git wget sudo unzip software-properties-common nano openjdk-17-jdk-headless python2.7 protobuf-compiler \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY ["timeout.sh", "/root/Argus-SAF/"]
 COPY ["runTool.sh", "/root/Argus-SAF/"]
 COPY ["nativedroid", "/root/Argus-SAF/nativedroid"]
 COPY ["tools", "/root/Argus-SAF/tools"]
-COPY ["binaries", "/root/Argus-SAF/binaries"]
+# build before create image
+COPY ["target/scala-2.12/argus-saf-3.2.1-SNAPSHOT-assembly.jar", "/root/Argus-SAF/"]
 COPY [".amandroid_stash", "/root/.amandroid_stash"]
-
-# COPY [".", "/root/Argus-SAF/"]
 
 WORKDIR /root
 SHELL ["/bin/bash", "-c"]
@@ -42,9 +38,6 @@ RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
  && rm -rf /tmp/* /var/tmp/*
 
 WORKDIR /root/Argus-SAF
-# download ~/.amandroid_stash
-# RUN java -jar binaries/argus-saf-3.2.1-SNAPSHOT-assembly.jar taint -o /tmp ./benchmarks/NativeFlowBench/native_leak.apk && rm -rf /tmp/* /var/tmp/*
 
-# /root/Argus-SAF/runTool.sh
-ENTRYPOINT ["/bin/bash", "/root/Argus-SAF/runTool.sh"]
+ENTRYPOINT ["/bin/bash", "/root/Argus-SAF/timeout.sh"]
 CMD ["/root/apps/app.apk"]

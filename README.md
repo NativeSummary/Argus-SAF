@@ -20,6 +20,8 @@ other files:
 1. intermediate files from nativedroid server `/tmp/binaries/`.
 1. intermediate files from jnsaf server: `/tmp/jn-saf/`.
 
+You can use `JNSAF_TIMEOUT` env variable to set a timeout for the whole analysis.
+
 ### timeouts
 
 1. `jnsaf\src\main\scala\org\argus\jnsaf\client\JNSafClient.scala:94` "loadBinary can not finish within 1 minutes" 90% apks will timeout here
@@ -131,7 +133,11 @@ the directory where Argus-SAF repository is and then import it as `SBT project`.
   ```
   $ tools/bin/sbt assembly
   ```
-  
+  Or
+  ```
+  tools/bin/sbt -java-home /usr/lib/jvm/java-8-openjdk-amd64 assembly
+  ```
+
 ## Install JN-Saf with NativeDroid
 
 Install `JN-Saf` and `NativeDroid`:
